@@ -2,7 +2,7 @@
 #' @description Summarized results of parameter and error values collected from internal diffusion models, namely: Boyd Internal Diffusion, Crank, and Weber and Morris
 #' @param t the numerical value for contact time
 #' @param qt the numerical value for the amount adsorbed at time t
-#' @param qinf the numerical value for the amount adsorbed at infinite time
+#' @param qinf the numerical value for the amount adsorbed at infinite time. If this argument is not defined, the maximum qt will be set as qinf.
 #' @param sort.by the name of the statistical error parameter in which the models are sorted in either increasing or decreasing order. The only accepted arguments are "RMSE" for Relative Mean Square Error, 'MAE' for Mean Absolute Error, 'MSE' for Mean Squared Error, 'RAE' for Relative Absolute Error, 'AIC' for Akaike Information Criterion, 'BIC' for Bayesian Information Criterion, 'R2' for Coefficient of Determination, and 'SE' for Standard Error Estimate. This argument is case-sensitive, and failure to input the correct value will yield a summary of models in alphabetical order.
 #' @import nls2
 #' @import stats
@@ -25,10 +25,17 @@ idsummary <- function(t,qt,qinf,sort.by){
   parameters <- new.env()
   summary.data <- new.env()
   linearfunction <- new.env()
-  if(missing(qinf)){
-    stop("qinf is required to run the function. The qe value can be solve using isotherm models.
-         See pakcage PUPAIM to solve adsorption isotherm models")
-  }else{}
+  if (missing(qinf)){
+    qinf <- max(qt)
+  } 
+  else if(is.null(qinf)){
+    qinf <- max(qt)
+  }
+  else{qinf <- qinf}
+  dat1 <- data.frame(t,qt)
+  qt <- dat1$qt[which(dat1$qt < qinf)]
+  t  <- dat1$t[which(dat1$qt < qinf)]
+  
   if(missing(sort.by)){
     s<-"sort.by"
   }else if(is.null(sort.by)){
@@ -177,7 +184,7 @@ idsummary <- function(t,qt,qinf,sort.by){
       Short.F <- as.vector(F.val[which(F.val <= 0.85 )])
       time.s  <- x[which(F.val <= 0.85)]
       short.data <- data.frame(Short.F,time.s)
-    }else{}
+    }
     if(length(Short.F)==0){
       cc<- capture.output(type="message",
                           fit37 <- try(nls2::nls2(long.time,
@@ -259,10 +266,10 @@ idsummary <- function(t,qt,qinf,sort.by){
     qt.val <-c(F.val.1*qinf)
     if(exists("B.s")==FALSE){
       B.s <-"NA"
-    }else{}
+    }
     if(exists("B.l")==FALSE){
       B.l <-"NA"
-    }else{}
+    }
     summary.data$Boyd.Intraparticle.Diffusion<-summary(BID.lm)
     parameters$BID.B.short <- B.s
     parameters$BID.B.long <- B.l
@@ -396,5 +403,5 @@ idsummary <- function(t,qt,qinf,sort.by){
       }
     }
     print(summary.data[[top.model]])
-  }else{}
+  }
 }

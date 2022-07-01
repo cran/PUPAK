@@ -114,6 +114,9 @@ bid.lm<- function(t,qt,qinf){
                                                   control=list(maxiter=1000)),
                                        silent=TRUE))
       B.s <- as.vector(coefficients(fit14))
+      if(is.null(B.s)==TRUE){
+        B.s <- ((2*pi)-(((pi^2)*Short.F)/3)-((2*pi)*sqrt(1-(pi*Short.F/3)))/time.s)
+      }
       if(length(Long.F)==0){
         exp.Bt.short <- as.vector(((2*pi)-(((pi^2)*Short.F)/3)-((2*pi)*(1-(pi*Short.F/3))^(0.5))))
         Bt.table <- data.frame(exp.Bt.short,time.s)
@@ -146,7 +149,9 @@ bid.lm<- function(t,qt,qinf){
                                          silent=TRUE))
         parsboyd.l <- as.vector(coefficients(fit13))
         pars_B <- parsboyd.l[1L]; pars_lin <- parsboyd.l[2L]
-        B.l <- pars_B/pars_lin
+        if(is.null(pars_B)==TRUE){
+          B.l <- ((-1.4977 + Long.F)/time.l)
+        }else{B.l <- pars_B/pars_lin}
         time.l <- long.data$time.l
         exp.Bt.short <- as.vector(((2*pi)-(((pi^2)*Short.F)/3)-((2*pi)*(1-(pi*Short.F/3))^(0.5))))
         exp.Bt.long  <- as.vector((-log(((pi^2)/6)*(1-Long.F))))
@@ -194,7 +199,7 @@ bid.lm<- function(t,qt,qinf){
       PAIC   <- round((as.numeric(AIC(BID.lm))),digits=10)
       PBIC   <- round((as.numeric(BIC(BID.lm))),digits=10)
       SE     <- round((as.numeric(sqrt((sum((qt.val-pred.val)^2))/(n.fin-2)))),digits=10)
-      rsqtot <- round((as.numeric(cor(qt.val,Bt)^2)),digits=10)
+      rsqtot <- round((as.numeric(summary(BID.lm)$r.squared)),digits=10)
       Col1   <- c(" |"," |"," |"," |"," |"," |"," |"," |")
       Col2   <- c("|","|","|","|","|","|","|","|")
       E.P    <- c("Relative Mean Square Error ", "Mean Absolute Error ","Mean Squared Error ","Relative Absolute Error ","Akaike Information Criterion ","Bayesian Information Criterion ","Standard Error Estimate ","Coefficient of Determination (R2)")
@@ -302,6 +307,9 @@ bid.lm<- function(t,qt,qinf){
                                                   control=list(maxiter=1000)),
                                        silent=TRUE))
       B.s <- as.vector(coefficients(fit14))
+      if(is.null(B.s)==TRUE){
+        B.s <- ((2*pi)-(((pi^2)*Short.F)/3)-((2*pi)*sqrt(1-(pi*Short.F/3)))/time.s)
+      }
       if(length(Long.F)==0){
         exp.Bt.short <- as.vector(((2*pi)-(((pi^2)*Short.F)/3)-((2*pi)*(1-(pi*Short.F/3))^(0.5))))
         Bt.table <- data.frame(exp.Bt.short,time.s)
@@ -335,7 +343,9 @@ bid.lm<- function(t,qt,qinf){
 
         parsboyd.l <- as.vector(coefficients(fit13))
         pars_B <- parsboyd.l[1L]; pars_lin <- parsboyd.l[2L]
-        B.l <- pars_B/pars_lin
+        if(is.null(pars_B)==TRUE){
+          B.l <- ((-1.4977 + Long.F)/time.l)
+        }else{B.l <- pars_B/pars_lin}
         time.l <- long.data$time.l
         exp.Bt.short <- as.vector(((2*pi)-(((pi^2)*Short.F)/3)-((2*pi)*(1-(pi*Short.F/3))^(0.5))))
         exp.Bt.long  <- as.vector((-log(((pi^2)/6)*(1-Long.F))))
@@ -383,7 +393,7 @@ bid.lm<- function(t,qt,qinf){
       PAIC   <- round((as.numeric(AIC(BID.lm))),digits=10)
       PBIC   <- round((as.numeric(BIC(BID.lm))),digits=10)
       SE     <- round((as.numeric(sqrt((sum((qt.val-pred.val)^2))/(n.fin-2)))),digits=10)
-      rsqtot <- round((as.numeric(cor(qt.val,Bt)^2)),digits=10)
+      rsqtot <- round((as.numeric(summary(BID.lm)$r.squared)),digits=10)
       Col1   <- c(" |"," |"," |"," |"," |"," |"," |"," |")
       Col2   <- c("|","|","|","|","|","|","|","|")
       E.P    <- c("Relative Mean Square Error ", "Mean Absolute Error ","Mean Squared Error ","Relative Absolute Error ","Akaike Information Criterion ","Bayesian Information Criterion ","Standard Error Estimate ","Coefficient of Determination (R2)")

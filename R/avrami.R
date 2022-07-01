@@ -2,7 +2,7 @@
 #' @description The Avrami Adsorption Kinetic Model investigates the time-concentration profiles of sorbent-sorbate interactions in adsorption-based water treatment. This equation was developed with the experimentally supported assumptions that the new phase is nucleated by germ nuclei that already exist in the old phase, and whose number can be altered by previous treatment (Oladoja, 2016).
 #' @param t the numerical value for contact time
 #' @param qt the numerical value for the amount adsorbed at time t
-#' @param qe the numerical value for the amount adsorbed at equilibrium
+#' @param qe the numerical value for the amount adsorbed at equilibrium. If qe is not defined, the value for qe will be equal to the maximum qt.
 #' @import nls2
 #' @import stats
 #' @import ggplot2
@@ -22,12 +22,19 @@
 #' @references Oladoja, N. A. (2016) <doi:10.1080/19443994.2015.1076355> A critical review of the applicability of Avrami fractional kinetic equation in adsorption-based water treatment studies. Desalination and Water Treatment, 57(34), 15813-15825.
 #' @export
 
-avrami <- function(t,qt,qe){
+avrami<- function(t,qt,qe){
+  if (missing(qe)){
+    qe <- max(qt)
+  }
+  else if(is.null(qe)){
+    qe <- max(qt)
+  }
+  else{qe <- qe}
   x     <- t
   y     <- qt
   dat   <- data.frame(x,y)
   n.dat <- nrow(na.omit(dat))
-  fxn  <- y ~ (qe* (1- ((exp(-k1*x))^n)))
+  fxn  <- y ~ (qe* (1- (exp(-k1*(x^n)))))
   grd1 <- data.frame(k1 = c(0,10),
                      n = c(0,1))
   cc<- capture.output(type="message",
@@ -87,7 +94,7 @@ avrami <- function(t,qt,qe){
   parsavm1 <- as.vector(coefficients(fit4))
   pars_k1  <- parsavm1[1L]; pars_n <- parsavm1[2L]
   theme_set(theme_bw())
-  fun.1 <- function(x) (qe* (1- (exp(-pars_k1*x)^pars_n)))
+  fun.1 <- function(x) (qe* (1- (exp(-pars_k1*(x^pars_n)))))
   plot <- ggplot(dat, aes(x=x,y=y))+
     geom_function(color="red", fun=fun.1, size=1)+
     geom_point()+

@@ -22,11 +22,16 @@ aksummary.l <- function(t,qt,qe,sort.by){
   errors <- new.env()
   parameters <- new.env()
   summary.data <- new.env()
-  if(missing(qe)){
-    stop("qe is required to run the function. The qe value can be solve using isotherm models.
-         See pakcage PUPAIM to solve adsorption isotherm models")
-  }else{qe <- qe}
-  t <-t ;qt <-qt
+  if (missing(qe)){
+    qe <- max(qt)
+  } 
+  else if(is.null(qe)){
+    qe <- max(qt)
+  }
+  else{qe <- qe}
+  dat1 <- data.frame(t,qt)
+  qt <- dat1$qt[which(dat1$qt < qe)]
+  t  <- dat1$t[which(dat1$qt < qe)]
   if(missing(sort.by)){
     s<-"sort.by"
   }else if(is.null(sort.by)){

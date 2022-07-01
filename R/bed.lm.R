@@ -1,8 +1,8 @@
 #' @title Linear Boyd External Diffusion Model
 #' @description  The Boyd External Diffusion Model is frequently applied to adsorption kinetic data to calculate the rate constant, assuming that film diffusion is the rate-limiting step in the first few minutes of the adsorption process. The film diffusion has a strong dependency on agitation. Boyd’s diffusion models are used in numerous adsorption studies mostly to determine the rate-controlling step (Viegas, Campinas, Costa, and Rosa, 2014).
 #' @param t the numerical value for contact time
-#' @param qt the numerical value for the amount adsorbed at time t. This parameter should not be greater than or equal to the other parameter 'qinf' as it will cause an incalculable value. Any row(s) that contain(s) a value greater than or equal to 'qe' will be automatically remove to proceed with the calculation.
-#' @param qinf the numerical value for the amount adsorbed at infinite time
+#' @param qt the numerical value for the amount adsorbed at time t. 
+#' @param qinf the numerical value for the amount adsorbed at infinite time. If the value for qinf is not given, the highest qt value will be considered as the qinf. 
 #' @import stats
 #' @import ggplot2
 #' @import Metrics
@@ -20,7 +20,16 @@
 #' @export
 
 bed.lm<- function(t,qt,qinf){
-  qinf  <- qinf         ;x <- t
+  if (missing(qinf)){
+    qinf <- max(qt)
+  } 
+  else if(is.null(qinf)){
+    qinf <- max(qt)
+  }
+  else{qinf <- qinf}
+  dat1 <- data.frame(t,qt)
+  qt <- dat1$qt[which(dat1$qt < qinf)]
+  x  <- dat1$t[which(dat1$qt < qinf)]
   y     <- log(1-(qt/qinf))
   dat1  <- data.frame(x,y)
   dat   <- subset(dat1,  y!="-Inf")

@@ -147,7 +147,6 @@ wam.pl<- function(t,qt){
       message("Error Estimation:")
       print(E.Table, right=F, row.names = F)
     }
-  }
     message("Weber-Morris Diffusion Model")
     message("Formula: qt = (kWAM*sqrt(t))+C")
     message("First Linear Summary")
@@ -183,4 +182,5 @@ wam.pl<- function(t,qt){
            title="Weber-Morris Intraparticle Model",
            caption="Created by PUPAK using ggplot2")
     print(plot)
+  }
 }

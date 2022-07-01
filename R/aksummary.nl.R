@@ -25,13 +25,15 @@ aksummary.nl <- function(t,qt,qe,n,sort.by){
   errors <- new.env()
   parameters <- new.env()
   summary.data <- new.env()
-  if(missing(qe)){
-    stop("qe is required to run the function. The qe value can be solve using isotherm models.
-         See pakcage PUPAIM to solve adsorption isotherm models")
-  }else{}
-  x  <- t      ;y <- qt
-  qe <- qe
-  dat <- data.frame(x,y)
+  t  <- t      ;qt <- qt
+  if (missing(qe)){
+    qe <- max(qt)
+  }
+  else if(is.null(qe)){
+    qe <- max(qt)
+  }
+  else{qe <- qe}
+  dat <- data.frame(t,qt)
   if(missing(n)){
     n <- NULL
   }else{}
@@ -48,7 +50,7 @@ aksummary.nl <- function(t,qt,qe,n,sort.by){
     x  <-t ;y  <-qt
     dat <- data.frame(x,y)
     n.dat <- nrow(na.omit(dat))
-    fxnavm <- y ~ (qe* (1- ((exp(-k1*x))^n)))
+    fxnavm <- y ~ (qe* (1- ((exp(-k1*(x^n))))))
     grdavm <- data.frame(k1 = c(0,10),
                          n = c(0,1))
     cc<- capture.output(type="message",
@@ -74,17 +76,17 @@ aksummary.nl <- function(t,qt,qe,n,sort.by){
                     algorithm = "brute-force",
                     control=list(maxiter=1000))
     }else{}
-    summary.data$Avhrami <- summary(fit23)
-    errors$rmse.avhrami <- rmse(y,predict(fit23))
-    errors$mae.avhrami  <- mae(y,predict(fit23))
-    errors$mse.avhrami  <- mse(y,predict(fit23))
-    errors$rae.avhrami  <- rae(y,predict(fit23))
-    errors$PAIC.avhrami <- AIC(fit23)
-    errors$PBIC.avhrami <- BIC(fit23)
-    errors$SE.avhrami   <- sqrt((sum((y-predict(fit23))^2))/(n.dat-2))
+    summary.data$Avrami <- summary(fit23)
+    errors$rmse.avrami <- rmse(y,predict(fit23))
+    errors$mae.avrami  <- mae(y,predict(fit23))
+    errors$mse.avrami  <- mse(y,predict(fit23))
+    errors$rae.avrami  <- rae(y,predict(fit23))
+    errors$PAIC.avrami <- AIC(fit23)
+    errors$PBIC.avrami <- BIC(fit23)
+    errors$SE.avrami   <- sqrt((sum((y-predict(fit23))^2))/(n.dat-2))
     parsavm1 <- as.vector(coefficients(fit23))
-    pars_k1  <- parsavm1[1L]    ;parameters$avhrami.k1 <- parsavm1[1L]
-    pars_n   <- parsavm1[2L]    ;parameters$avhrami.n  <- parsavm1[2L]
+    pars_k1  <- parsavm1[1L]    ;parameters$avrami.k1 <- parsavm1[1L]
+    pars_n   <- parsavm1[2L]    ;parameters$avrami.n  <- parsavm1[2L]
   }
   Elovich.sum.nl <- function(t,qt){
     x <- t ;y <- qt
@@ -98,7 +100,7 @@ aksummary.nl <- function(t,qt,qe,n,sort.by){
                                                 data = dat,
                                                 start = grdem,
                                                 algorithm = "port",
-                                                control = list(maxiter = 1000)),
+                                                control = list(maxiter = 2000)),
                                      silent=TRUE))
     if(is.null(fit24)==TRUE){
       fit24 <- nls2(fxnem,
@@ -479,8 +481,8 @@ aksummary.nl <- function(t,qt,qe,n,sort.by){
   PNO.sum.nl(t,qt,qe)
   PSO.sum.nl(t,qt,qe)
   Richie.sum.nl(t,qt,qe,n)
-  Avhrami.k1 <- parameters[["avhrami.k1"]]
-  Avhrami.n  <-  parameters[["avhrami.n"]]
+  Avrami.k1 <- parameters[["avrami.k1"]]
+  Avrami.n  <-  parameters[["avrami.n"]]
   Elovich.alpha <- parameters[["elovich.alpha"]]
   Elovich.beta  <- parameters[["elovich.beta"]]
   FractionalPower.alpha <- parameters[["fracpow.alpha"]]
@@ -491,21 +493,21 @@ aksummary.nl <- function(t,qt,qe,n,sort.by){
   PNO.n  <- parameters[["pno.n"]]
   Richie.alpha <- parameters[["richie.a"]]
   Richie.n <-parameters[["richie.n"]]
-  param1.name <- c("k.Avhrami","alpha","alpha","k.PFO","k.PNO","k.PSO","alpha")
+  param1.name <- c("k.Avrami","alpha","alpha","k.PFO","k.PNO","k.PSO","alpha")
   param2.name <- c("n","beta","beta","-","n","-","n")
-  param1.val  <- as.numeric(c(Avhrami.k1,Elovich.alpha,FractionalPower.alpha,PFO.k1,PNO.kn,PSO.k2,Richie.alpha))
-  param2.val  <- as.numeric(c(Avhrami.n,Elovich.beta,FractionalPower.beta," ",PNO.n," ",Richie.n))
+  param1.val  <- as.numeric(c(Avrami.k1,Elovich.alpha,FractionalPower.alpha,PFO.k1,PNO.kn,PSO.k2,Richie.alpha))
+  param2.val  <- as.numeric(c(Avrami.n,Elovich.beta,FractionalPower.beta," ",PNO.n," ",Richie.n))
   param1.val  <- round(param1.val,digits=6)
   param2.val  <- round(param2.val,digits=6)
   param2.val[is.na(param2.val)]<-"-"
-  Models <- c("Avhrami","Elovich","FractionalPower","PFO","PNO","PSO","Richie")
-  rmse.val <- as.numeric(c(errors[["rmse.avhrami"]],errors[["rmse.elovich"]],errors[["rmse.fracpow"]],errors[["rmse.pfo"]],errors[["rmse.pno"]],errors[["rmse.pso"]],errors[["rmse.richie"]]))
-  mae.val  <- as.numeric(c(errors[["mae.avhrami"]],errors[["mae.elovich"]],errors[["mae.fracpow"]],errors[["mae.pfo"]],errors[["mae.pno"]],errors[["mae.pso"]],errors[["mae.richie"]]))
-  mse.val  <- as.numeric(c(errors[["mse.avhrami"]],errors[["mse.elovich"]],errors[["mse.fracpow"]],errors[["mse.pfo"]],errors[["mse.pno"]],errors[["mse.pso"]],errors[["mse.richie"]]))
-  rae.val  <- as.numeric(c(errors[["rae.avhrami"]],errors[["rae.elovich"]],errors[["rae.fracpow"]],errors[["rae.pfo"]],errors[["rae.pno"]],errors[["rae.pso"]],errors[["rae.richie"]]))
-  PAIC.val <- as.numeric(c(errors[["PAIC.avhrami"]],errors[["PAIC.elovich"]],errors[["PAIC.fracpow"]],errors[["PAIC.pfo"]],errors[["PAIC.pno"]],errors[["PAIC.pso"]],errors[["PAIC.richie"]]))
-  PBIC.val <- as.numeric(c(errors[["PBIC.avhrami"]],errors[["PBIC.elovich"]],errors[["PBIC.fracpow"]],errors[["PBIC.pfo"]],errors[["PBIC.pno"]],errors[["PBIC.pso"]],errors[["PBIC.richie"]]))
-  SE.val   <- as.numeric(c(errors[["SE.avhrami"]],errors[["SE.elovich"]],errors[["SE.fracpow"]],errors[["SE.pfo"]],errors[["SE.pno"]],errors[["SE.pso"]],errors[["SE.richie"]]))
+  Models <- c("Avrami","Elovich","FractionalPower","PFO","PNO","PSO","Richie")
+  rmse.val <- as.numeric(c(errors[["rmse.avrami"]],errors[["rmse.elovich"]],errors[["rmse.fracpow"]],errors[["rmse.pfo"]],errors[["rmse.pno"]],errors[["rmse.pso"]],errors[["rmse.richie"]]))
+  mae.val  <- as.numeric(c(errors[["mae.avrami"]],errors[["mae.elovich"]],errors[["mae.fracpow"]],errors[["mae.pfo"]],errors[["mae.pno"]],errors[["mae.pso"]],errors[["mae.richie"]]))
+  mse.val  <- as.numeric(c(errors[["mse.avrami"]],errors[["mse.elovich"]],errors[["mse.fracpow"]],errors[["mse.pfo"]],errors[["mse.pno"]],errors[["mse.pso"]],errors[["mse.richie"]]))
+  rae.val  <- as.numeric(c(errors[["rae.avrami"]],errors[["rae.elovich"]],errors[["rae.fracpow"]],errors[["rae.pfo"]],errors[["rae.pno"]],errors[["rae.pso"]],errors[["rae.richie"]]))
+  PAIC.val <- as.numeric(c(errors[["PAIC.avrami"]],errors[["PAIC.elovich"]],errors[["PAIC.fracpow"]],errors[["PAIC.pfo"]],errors[["PAIC.pno"]],errors[["PAIC.pso"]],errors[["PAIC.richie"]]))
+  PBIC.val <- as.numeric(c(errors[["PBIC.avrami"]],errors[["PBIC.elovich"]],errors[["PBIC.fracpow"]],errors[["PBIC.pfo"]],errors[["PBIC.pno"]],errors[["PBIC.pso"]],errors[["PBIC.richie"]]))
+  SE.val   <- as.numeric(c(errors[["SE.avrami"]],errors[["SE.elovich"]],errors[["SE.fracpow"]],errors[["SE.pfo"]],errors[["SE.pno"]],errors[["SE.pso"]],errors[["SE.richie"]]))
   rmse.val <- round(rmse.val,digits=6)
   mae.val  <- round(mae.val,digits=6)
   mse.val  <- round(mse.val,digits=6)

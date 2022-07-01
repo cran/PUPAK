@@ -4,14 +4,16 @@
 \alias{pfo.lm}
 \title{Linear Pseudo-First-Order Adsorption Kinetic Model}
 \usage{
-pfo.lm(t, qt, qe)
+pfo.lm(t, qt, qe, est.qe)
 }
 \arguments{
 \item{t}{the numerical value for contact time}
 
-\item{qt}{the numerical value for the amount adsorbed at time t. This parameter should not be greater than or equal to qe as it will cause an incalculable value. Any row(s) that contain(s) a value greater than or equal to qe will be automatically removed to proceed with the calculation.}
+\item{qt}{the numerical value for the amount adsorbed at time t.}
 
-\item{qe}{the numerical value for the amount adsorbed at equilibrium}
+\item{qe}{the numerical value for the amount adsorbed at equilibrium. If the value for qe is not given, the highest qt value will be considered as the qe.}
+
+\item{est.qe}{option for calculating estimated qe. If the value is FALSE, it will calculate linear regression with fixed intercept. If the value is TRUE, it will calculate the linear regression in form y=mx+b. The default value for est.qe is FALSE.}
 }
 \value{
 the linear regression and the parameter estimation for the Pseudo First Order Model
@@ -23,7 +25,7 @@ The Pseudo-First-Order Adsorption Kinetic Model follows the Linear Driving Force
 t <- c(0,15,30,45,60,75,90,105,120)
 qt <-c(0.000,3.718,3.888,4.102,4.274,4.402,4.444,4.488,4.616)
 qe <- 4.8
-pfo.lm(t,qt,qe)
+pfo.lm(t,qt,qe,est.qe=FALSE)
 }
 \references{
 Lagergren, S. (1898), Zur theorie der sogenannten adsorption gelster stoffe, Kungliga Svenska Vetenskapsakademiens. Handlingar, 24 (4) : 1-39.

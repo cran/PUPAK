@@ -9,9 +9,9 @@ bed.lm(t, qt, qinf)
 \arguments{
 \item{t}{the numerical value for contact time}
 
-\item{qt}{the numerical value for the amount adsorbed at time t. This parameter should not be greater than or equal to the other parameter 'qinf' as it will cause an incalculable value. Any row(s) that contain(s) a value greater than or equal to 'qe' will be automatically remove to proceed with the calculation.}
+\item{qt}{the numerical value for the amount adsorbed at time t.}
 
-\item{qinf}{the numerical value for the amount adsorbed at infinite time}
+\item{qinf}{the numerical value for the amount adsorbed at infinite time. If the value for qinf is not given, the highest qt value will be considered as the qinf.}
 }
 \value{
 the linear regression and the parameter estimation for the Boyd External Diffusion Model

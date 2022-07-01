@@ -11,7 +11,7 @@ avrami(t, qt, qe)
 
 \item{qt}{the numerical value for the amount adsorbed at time t}
 
-\item{qe}{the numerical value for the amount adsorbed at equilibrium}
+\item{qe}{the numerical value for the amount adsorbed at equilibrium. If qe is not defined, the value for qe will be equal to the maximum qt.}
 }
 \value{
 the non-linear regression and the parameter estimation for the Avrami adsorption kinetic model analysis

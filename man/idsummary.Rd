@@ -11,7 +11,7 @@ idsummary(t, qt, qinf, sort.by)
 
 \item{qt}{the numerical value for the amount adsorbed at time t}
 
-\item{qinf}{the numerical value for the amount adsorbed at infinite time}
+\item{qinf}{the numerical value for the amount adsorbed at infinite time. If this argument is not defined, the maximum qt will be set as qinf.}
 
 \item{sort.by}{the name of the statistical error parameter in which the models are sorted in either increasing or decreasing order. The only accepted arguments are "RMSE" for Relative Mean Square Error, 'MAE' for Mean Absolute Error, 'MSE' for Mean Squared Error, 'RAE' for Relative Absolute Error, 'AIC' for Akaike Information Criterion, 'BIC' for Bayesian Information Criterion, 'R2' for Coefficient of Determination, and 'SE' for Standard Error Estimate. This argument is case-sensitive, and failure to input the correct value will yield a summary of models in alphabetical order.}
 }
